@@ -113,6 +113,7 @@ jobs:
       - name: Check security vulnerabilities for BW
         uses: aquasecurity/trivy-action@master
         with:
+          vuln-type: os
           image-ref: 10.20.1.1:5000/bw-tests:latest
           format: table
           exit-code: 1
@@ -122,6 +123,7 @@ jobs:
       - name: Check security vulnerabilities for autoconf
         uses: aquasecurity/trivy-action@master
         with:
+          vuln-type: os
           image-ref: 10.20.1.1:5000/bw-autoconf-tests:latest
           format: table
           exit-code: 1
@@ -131,6 +133,7 @@ jobs:
       - name: Check security vulnerabilities for UI
         uses: aquasecurity/trivy-action@master
         with:
+          vuln-type: os
           image-ref: 10.20.1.1:5000/bw-ui-tests:latest
           format: table
           exit-code: 1
@@ -148,7 +151,7 @@ jobs:
 
       - name: Set variables
         run: |
-          if [ "$GITHUB_REF" = "refs/heads/main" ] ; then
+          if [ "$GITHUB_REF" = "refs/heads/master" ] ; then
             echo "BUILD_MODE=prod" >> $GITHUB_ENV
           else
             echo "BUILD_MODE=dev" >> $GITHUB_ENV
@@ -200,7 +203,7 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: ${{ secrets.PRIVATE_REGISTRY }}
-          username: nologin
+          username: registry
           password: ${{ secrets.PRIVATE_REGISTRY_TOKEN }}
 
       - name: Build and push BW prod image
@@ -339,7 +342,7 @@ jobs:
       - name: Push CentOS RPM to packagecloud
         uses: danielmundi/upload-packagecloud@v1
         with:
-          PACKAGE-NAME: /opt/packages/prod/centos/bunkerweb.${{ env.VERSION }}-1.x86_64.rpm
+          PACKAGE-NAME: /opt/packages/prod/centos/bunkerweb-${{ env.VERSION }}-1.x86_64.rpm
           PACKAGECLOUD-USERNAME: bunkerity
           PACKAGECLOUD-REPO: bunkerweb
           PACKAGECLOUD-DISTRIB: el/8
@@ -348,7 +351,7 @@ jobs:
       - name: Push Fedora RPM to packagecloud
         uses: danielmundi/upload-packagecloud@v1
         with:
-          PACKAGE-NAME: /opt/packages/prod/fedora/bunkerweb.${{ env.VERSION }}-1.x86_64.rpm
+          PACKAGE-NAME: /opt/packages/prod/fedora/bunkerweb-${{ env.VERSION }}-1.x86_64.rpm
           PACKAGECLOUD-USERNAME: bunkerity
           PACKAGECLOUD-REPO: bunkerweb
           PACKAGECLOUD-DISTRIB: fedora/36
